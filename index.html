@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Data</title>
+</head>
+<body>
+    <div id="app" class="max-w-[1000px] mx-auto">
+        <h1 class="font-bold text-3xl text-center text-blue-600 my-4">Cryptocurrency Data</h1>
+    </div>
+    <script>
+      const table = (content) => `<table class="table-auto w-full">${content}</table>`;
+      const row = (data, symbol, i) => {        
+        const icon = data['image'] ? data['image'] : ''; 
+        return `<tr>
+            <td class="w-16 p-2 align-top border-b ${i === 0 ? 'border-t' : ''} border-gray-200">
+                <img class="h-10 w-10 object-cover" src="${data['image']}" />
+            </td>
+            <td class="py-1 px-2 border-b border-gray-300 text-black">${symbol}</td>
+            <td class="py-1 px-2 border-b border-gray-300 text-black">${data['name']}</td>
+            <td class="py-1 px-2 border-b border-gray-300 text-black">${data['summary']}</td>
+        </tr>`;
+      };
+
+      const createTable = (data) => {
+        if (!data || Object.keys(data).length === 0) {
+          console.error('Empty or invalid data:', data);
+          return;
+        }
+        const dataArray = Object.entries(data);
+        let rows = dataArray.map(([symbol, d], i) => row(d, symbol, i)).join("");        
+        document.getElementById("app").insertAdjacentHTML("beforeend", table(rows));
+      };
+
+      const url = "https://api.mtw-testnet.com/assets/all";
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          createTable(data);
+        })
+        .catch((err) => console.error('There was a problem with the fetch operation:', err));
+    </script>
+</body>
+</html>
